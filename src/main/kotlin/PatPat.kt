@@ -14,7 +14,7 @@ object PatPat : KotlinPlugin(
     JvmPluginDescription(
         id = "org.laolittle.plugin.PatPat",
         name = "PatPat",
-        version = "1.0",
+        version = "1.0.1",
     )
 ) {
     override fun onEnable() {
