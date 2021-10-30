@@ -11,7 +11,7 @@ import org.laolittle.plugin.model.getavatar
 import java.io.File
 
 object Pat : SimpleCommand(
-    PatPat, "pat", "摸", "摸摸", "摸头", "patpat",
+    PatPat, "摸", "摸摸", "摸头", "patpat", "pat",
     description = "摸摸头"
 ){
 
