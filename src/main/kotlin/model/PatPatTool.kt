@@ -23,6 +23,7 @@ import javax.imageio.ImageIO
     fun getavatar(qqid: Long) {
         val tmp = File("$dataFolder/tmp")
         if(!tmp.exists()) tmp.mkdir()
+        if(tmp.resolve("${qqid}_pat.gif").exists()) return
         val avatarurl = "http://q1.qlogo.cn/g?b=qq&nk=$qqid&s=640"
         var connection : HttpURLConnection? = null
         try {
@@ -41,6 +42,9 @@ import javax.imageio.ImageIO
             connection?.disconnect()
         }
     mkimg(tmp.resolve("${qqid}_avatar.jpg"), tmp.resolve("${qqid}_pat.gif"), qqid)
+    for(i in 0..4)
+        tmp.resolve("${qqid}_g${i}.jpg").delete()
+    tmp.resolve("${qqid}_avatar.jpg").delete()
         return
     }
 
