@@ -17,7 +17,10 @@ object ClearCache : SimpleCommand(
         val tmp = File("$dataFolder/tmp")
         var flag = false
         if(tmp.exists()) flag = tmp.deleteRecursively()
-        if(flag) sendMessage(At(user!!) + PlainText("缓存清理完毕"))
+        if(flag) {
+            if(user != null) sendMessage(At(user!!) + PlainText("缓存清理完毕"))
+            else sendMessage(PlainText("缓存清理完毕"))
+        }
         else sendMessage(PlainText("缓存清理失败！"))
     }
 }
