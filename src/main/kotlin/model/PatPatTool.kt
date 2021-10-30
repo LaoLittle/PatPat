@@ -54,7 +54,7 @@ import javax.imageio.ImageIO
         val bufferedImage = ImageIO.read(filePath)
         val circularBufferImage = roundImage(bufferedImage, 112, 112)
         //ImageIO.write(circularBufferImage, "png", savePath)
-        // y:头像y轴偏移量   hy:手的y轴偏移量　w:横向挤压 标准为112 h:纵向挤压 标准为112
+        //w:横向挤压 标准为112 h:纵向挤压 标准为112 y:头像y轴偏移量 hy:手的y轴偏移量
         val p1 = processImage(circularBufferImage, qqid, 0, 90, 90, 5, 0)
         val p2 = processImage(circularBufferImage, qqid, 1, 92, 85, 28, 3)
         val p3 = processImage(circularBufferImage, qqid, 2, 95, 79, 36, 6)
