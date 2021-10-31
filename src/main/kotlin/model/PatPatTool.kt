@@ -42,8 +42,8 @@ import javax.imageio.ImageIO
             connection?.disconnect()
         }
     mkimg(tmp.resolve("${qqid}_avatar.jpg"), tmp.resolve("${qqid}_pat.gif"), qqid)
-    for(i in 0..4)
-        tmp.resolve("${qqid}_g${i}.jpg").delete()
+    for(hippopotomonstrosesquippedaliophobia in 0..4)
+        tmp.resolve("${qqid}_g${hippopotomonstrosesquippedaliophobia}.jpg").delete()
     tmp.resolve("${qqid}_avatar.jpg").delete()
         return
     }
@@ -54,25 +54,27 @@ import javax.imageio.ImageIO
         val bufferedImage = ImageIO.read(filePath)
         val circularBufferImage = roundImage(bufferedImage, 112, 112)
         //ImageIO.write(circularBufferImage, "png", savePath)
-        //w:横向挤压 标准为112 h:纵向挤压 标准为112 y:头像y轴偏移量 hy:手的y轴偏移量
-        val p1 = processImage(circularBufferImage, qqid, 0, 90, 90, 5, 0)
-        val p2 = processImage(circularBufferImage, qqid, 1, 92, 85, 28, 3)
-        val p3 = processImage(circularBufferImage, qqid, 2, 95, 79, 36, 6)
-        val p4 = processImage(circularBufferImage, qqid, 3, 97, 74, 29, 9)
-        val p5 = processImage(circularBufferImage, qqid, 4, 100, 68, 37, 12)
-        val images: Array<String?> = arrayOf(p1, p2, p3, p4, p5, p4, p3, p2)
-        GifEncoder.convert(images, "$savePath", 60, true)
+        //ImageIO.write(circularBufferImage, "png", File("$dataFolder/tmp/test.png"))
+        //w:横向挤压 标准为112 h:纵向挤压 标准为112 x:头像x轴偏移量 y:头像y轴偏移量 hy:手的y轴偏移量
+        val p1 = processImage(circularBufferImage, qqid, 0, 100, 100, 12, 16, 0)
+        val p2 = processImage(circularBufferImage, qqid, 1, 105, 88, 12, 28, 0)
+        val p3 = processImage(circularBufferImage, qqid, 2, 110, 76, 12, 40, 6)
+        val p4 = processImage(circularBufferImage, qqid, 3, 107, 84, 12, 32, 0)
+        val p5 = processImage(circularBufferImage, qqid, 4, 100, 100, 12, 16, 0)
+        val images: Array<String?> = arrayOf(p1, p2, p3, p4, p5)
+        //delay: 播放间隔
+        GifEncoder.convert(images, "$savePath", 80, true)
         //toGif(p1, p2, p3, p4, p5, savePath)
         return
     }
 
 
 
-fun processImage(image: BufferedImage, qqid: Long, i: Int, w: Int, h: Int, y: Int, hy: Int): String {
+fun processImage(image: BufferedImage, qqid: Long, i: Int, w: Int, h: Int, x: Int, y: Int, hy: Int): String {
     val tmp = File("$dataFolder/tmp")
     val handImage = ImageIO.read(dataFolder.resolve("img${i}.png"))
     val processingImage = resizeImage(image, w, h)
-    val processedImage = compoundImage(handImage, processingImage, y, hy)
+    val processedImage = compoundImage(handImage, processingImage, x, y, hy)
     ImageIO.write(processedImage, "jpg", tmp.resolve("${qqid}_g${i}.jpg"))
     return "$dataFolder/tmp/${qqid}_g${i}.jpg"
     //return compoundImage(handImage, processingImage, y)
@@ -106,12 +108,12 @@ fun processImage(image: BufferedImage, qqid: Long, i: Int, w: Int, h: Int, y: In
     }
 
     //合成图片 手手和头像
-    fun compoundImage(handImage: BufferedImage, avatarImage: BufferedImage, y: Int, hy: Int): BufferedImage {
+    fun compoundImage(handImage: BufferedImage, avatarImage: BufferedImage, x: Int, y: Int, hy: Int): BufferedImage {
         val backImage = BufferedImage(112, 112, TYPE_INT_RGB)
         val g2 = backImage.createGraphics()
         g2.color = Color.WHITE
         g2.fillRect(0, 0, 112, 112)
-        g2.drawImage(avatarImage, 0, y,  null) //绘制头像
+        g2.drawImage(avatarImage, x, y,  null) //绘制头像
         g2.drawImage(handImage, 0, hy, null) //绘制手
         g2.dispose()
         return backImage
