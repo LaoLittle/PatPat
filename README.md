@@ -1,6 +1,6 @@
 简单的mirai摸摸头插件
 
-使用前请将data/PatPat文件夹转移到mirai的data目录下
+使用方法：请将本插件放置于mirai的plugins目录下
 
 需要前置插件 chat-command
 chat-command：https://github.com/project-mirai/chat-command/releases/tag/0.5.1
