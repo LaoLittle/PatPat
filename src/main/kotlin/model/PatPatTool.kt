@@ -1,7 +1,8 @@
 package org.laolittle.plugin.model
 
+import org.laolittle.plugin.PatPat
 import org.laolittle.plugin.PatPat.dataFolder
-import util.GifEncoder
+import org.laolittle.plugin.util.GifEncoder
 import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.RenderingHints.KEY_ANTIALIASING
@@ -10,12 +11,10 @@ import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.awt.image.BufferedImage.TYPE_INT_RGB
-import java.io.BufferedOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.jar.JarFile
 import javax.imageio.ImageIO
 
 
@@ -72,7 +71,7 @@ import javax.imageio.ImageIO
 
 fun processImage(image: BufferedImage, qqid: Long, i: Int, w: Int, h: Int, x: Int, y: Int, hy: Int): String {
     val tmp = File("$dataFolder/tmp")
-    val handImage = ImageIO.read(dataFolder.resolve("img${i}.png"))
+    val handImage = ImageIO.read(selfRead(i))
     val processingImage = resizeImage(image, w, h)
     val processedImage = compoundImage(handImage, processingImage, x, y, hy)
     ImageIO.write(processedImage, "jpg", tmp.resolve("${qqid}_g${i}.jpg"))
@@ -117,4 +116,11 @@ fun processImage(image: BufferedImage, qqid: Long, i: Int, w: Int, h: Int, x: In
         g2.drawImage(handImage, 0, hy, null) //绘制手
         g2.dispose()
         return backImage
+    }
+
+    fun selfRead(i: Int): InputStream? {
+        val path = PatPat.javaClass.protectionDomain.codeSource.location.path
+        val jar = JarFile(path)
+        val entry = jar.getJarEntry("data/PatPat/img${i}.png")
+        return jar.getInputStream(entry)
     }
