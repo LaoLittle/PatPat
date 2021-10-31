@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "org.laolittle.plugin"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     maven("https://maven.aliyun.com/repository/public")
