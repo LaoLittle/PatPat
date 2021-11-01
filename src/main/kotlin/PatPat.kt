@@ -6,6 +6,7 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.info
 import org.laolittle.plugin.command.ClearCache
+import org.laolittle.plugin.command.JustPat
 import org.laolittle.plugin.command.Pat
 import org.laolittle.plugin.command.SelfPat
 import java.io.File
@@ -14,7 +15,7 @@ object PatPat : KotlinPlugin(
     JvmPluginDescription(
         id = "org.laolittle.plugin.PatPat",
         name = "PatPat",
-        version = "1.0.3",
+        version = "1.0.4",
     )
 ) {
     override fun onEnable() {
@@ -22,6 +23,7 @@ object PatPat : KotlinPlugin(
         Pat.register()
         SelfPat.register()
         ClearCache.register()
+        JustPat.register()
         val tmp = File("$dataFolder/tmp")
         if(tmp.exists()) tmp.deleteRecursively()
         logger.info { "缓存已自动清理" }
@@ -32,5 +34,6 @@ object PatPat : KotlinPlugin(
         Pat.unregister()
         SelfPat.unregister()
         ClearCache.unregister()
+        JustPat.unregister()
     }
 }
