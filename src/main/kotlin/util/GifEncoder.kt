@@ -109,8 +109,27 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
             }
         }
 
+        private fun convert(
+            images: Array<BufferedImage?>,
+            gifPath: String?,
+            delay: Int,
+            loop: Boolean,
+            width: Int?,
+            height: Int?
+        ) {
+            try {
+                val fileImageOutputStream = FileImageOutputStream(File(gifPath))
+                convert(images, fileImageOutputStream, delay, loop, width, height)
+            } catch (e: Exception) {
+                throw RuntimeException("GIF convert error", e)
+            }
+        }
+
         fun convert(imagePaths: Array<String?>, gifPath: String?, delay: Int, loop: Boolean) {
             convert(imagePaths, gifPath, delay, loop, null, null)
+        }
+        fun convert(images: Array<BufferedImage?>, gifPath: String?, delay: Int, loop: Boolean){
+            convert(images, gifPath, delay, loop, null, null)
         }
     }
 
