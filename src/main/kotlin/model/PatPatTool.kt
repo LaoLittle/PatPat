@@ -17,110 +17,88 @@ import java.net.URL
 import java.util.jar.JarFile
 import javax.imageio.ImageIO
 
-
-//获取头像并暂存在本地的tmp内
-    fun getavatar(qqid: Long) {
-        val tmp = File("$dataFolder/tmp")
-        if(!tmp.exists()) tmp.mkdir()
-        if(tmp.resolve("${qqid}_pat.gif").exists()) return
-        val avatarurl = "http://q1.qlogo.cn/g?b=qq&nk=$qqid&s=640"
-        var connection : HttpURLConnection? = null
-        try {
-            connection = URL(avatarurl).openConnection() as HttpURLConnection //建立链接
-
-            connection.connect() //打开输入流
-
-            connection.inputStream.use { input ->
-                BufferedOutputStream(FileOutputStream(tmp.resolve("${qqid}_avatar.jpg"))).use { output ->
-                    input.copyTo(output)  //将文件复制到本地
-                }
-            }
-        }catch (e : Exception){
-            e.printStackTrace()
-        }finally {
-            connection?.disconnect()
-        }
-    mkimg(tmp.resolve("${qqid}_avatar.jpg"), tmp.resolve("${qqid}_pat.gif"), qqid)
-    for(hippopotomonstrosesquippedaliophobia in 0..4)
-        tmp.resolve("${qqid}_g${hippopotomonstrosesquippedaliophobia}.jpg").delete()
-    tmp.resolve("${qqid}_avatar.jpg").delete()
-        return
-    }
-
-
-    @Throws(IOException::class)
-    fun mkimg(filePath: File?, savePath: File?, qqid: Long) {
-        val bufferedImage = ImageIO.read(filePath)
-        val circularBufferImage = roundImage(bufferedImage, 112, 112)
-        //ImageIO.write(circularBufferImage, "png", savePath)
-        //ImageIO.write(circularBufferImage, "png", File("$dataFolder/tmp/test.png"))
-        //w:横向挤压 标准为112 h:纵向挤压 标准为112 x:头像x轴偏移量 y:头像y轴偏移量 hy:手的y轴偏移量
-        val p1 = processImage(circularBufferImage, qqid, 0, 100, 100, 12, 16, 0)
-        val p2 = processImage(circularBufferImage, qqid, 1, 105, 88, 12, 28, 0)
-        val p3 = processImage(circularBufferImage, qqid, 2, 110, 76, 12, 40, 6)
-        val p4 = processImage(circularBufferImage, qqid, 3, 107, 84, 12, 32, 0)
-        val p5 = processImage(circularBufferImage, qqid, 4, 100, 100, 12, 16, 0)
-        val images: Array<String?> = arrayOf(p1, p2, p3, p4, p5)
-        //delay: 播放间隔
-        GifEncoder.convert(images, "$savePath", 80, true)
-        //toGif(p1, p2, p3, p4, p5, savePath)
-        return
-    }
-
-
-
-fun processImage(image: BufferedImage, qqid: Long, i: Int, w: Int, h: Int, x: Int, y: Int, hy: Int): String {
+fun getavatar(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     val tmp = File("$dataFolder/tmp")
+    if(!tmp.exists()) tmp.mkdir()
+    if(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif").exists()) return
+    val avatarurl = "http://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
+    var connection : HttpURLConnection? = null
+    try {
+        connection = URL(avatarurl).openConnection() as HttpURLConnection //建立链接
+
+        connection.connect() //打开输入流
+
+        connection.inputStream.use { input ->
+            BufferedOutputStream(FileOutputStream(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg"))).use { output ->
+                input.copyTo(output)  //将文件复制到本地
+            }
+        }
+    }catch (e : Exception){
+        e.printStackTrace()
+    }finally {
+        connection?.disconnect()
+    }
+    mkimg(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg"), tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
+    tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg").delete()
+    return
+}
+
+@Throws(IOException::class)
+private fun mkimg(filePath: File?, savePath: File?, delay: Int){
+    val targetSize = 112
+    val cornerRadius = 112
+    val avatarImage = ImageIO.read(filePath)
+    val roundImage = BufferedImage(targetSize, cornerRadius, TYPE_INT_ARGB)
+    val g2 = roundImage.createGraphics()
+    g2.composite = AlphaComposite.Src
+    g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
+    g2.color = Color.WHITE
+    g2.fill(
+        RoundRectangle2D.Float(
+            0F, 0F, targetSize.toFloat(), targetSize.toFloat(),
+            cornerRadius.toFloat(), cornerRadius.toFloat()
+        )
+    )
+    g2.composite = AlphaComposite.SrcAtop
+    g2.drawImage(avatarImage, 0, 0, targetSize, cornerRadius, null)
+    g2.dispose()
+    val p1 = processImage(roundImage, 0, 100, 100, 12, 16, 0)
+    val p2 = processImage(roundImage, 1, 105, 88, 12, 28, 0)
+    val p3 = processImage(roundImage, 2, 110, 76, 12, 40, 6)
+    val p4 = processImage(roundImage, 3, 107, 84, 12, 32, 0)
+    val p5 = processImage(roundImage, 4, 100, 100, 12, 16, 0)
+    val images: Array<BufferedImage?> = arrayOf(p1, p2, p3, p4, p5)
+    GifEncoder.convert(images, "$savePath", delay, true)
+}
+
+private fun processImage(
+    image: BufferedImage,
+    i: Int,
+    w: Int,
+    h: Int,
+    x: Int,
+    y: Int,
+    hy: Int
+): BufferedImage {
     val handImage = ImageIO.read(selfRead(i))
-    val processingImage = resizeImage(image, w, h)
-    val processedImage = compoundImage(handImage, processingImage, x, y, hy)
-    ImageIO.write(processedImage, "jpg", tmp.resolve("${qqid}_g${i}.jpg"))
-    return "$dataFolder/tmp/${qqid}_g${i}.jpg"
+    val processingImage = BufferedImage(w, h, TYPE_INT_ARGB)
+    val processedImage = BufferedImage(112, 112, TYPE_INT_RGB)
+    val g1 = processingImage.createGraphics()
+    g1.drawImage(image, 0, 0, w, h, null)
+    g1.dispose()
+    val g2 = processedImage.createGraphics()
+    g2.color = Color.WHITE
+    g2.fillRect(0, 0, 112, 112)
+    g2.drawImage(processingImage, x, y, null)
+    g2.drawImage(handImage, 0, hy, null)
+    g2.dispose()
+    return processedImage
     //return compoundImage(handImage, processingImage, y)
 }
 
-    //将图片绘制到圆形图片上，并改变头像尺寸
-    private fun roundImage(image: BufferedImage, targetSize: Int, cornerRadius: Int): BufferedImage {
-        val outputImage = BufferedImage(targetSize, targetSize, TYPE_INT_ARGB)
-        val g2 = outputImage.createGraphics()
-        g2.composite = AlphaComposite.Src
-        g2.setRenderingHint(KEY_ANTIALIASING, VALUE_ANTIALIAS_ON)
-        g2.color = Color.WHITE
-        g2.fill(
-            RoundRectangle2D.Float(
-                0F, 0F, targetSize.toFloat(), targetSize.toFloat(),
-                cornerRadius.toFloat(), cornerRadius.toFloat()
-            )
-        )
-        g2.composite = AlphaComposite.SrcAtop
-        g2.drawImage(image, 0, 0, targetSize, targetSize, null)
-        g2.dispose()
-        return outputImage
-    }
-
-    fun resizeImage(roundImage: BufferedImage, targetWidth: Int, targetHeight: Int): BufferedImage {
-        val resizedImage = BufferedImage(targetWidth, targetHeight, TYPE_INT_ARGB)
-        val g2 = resizedImage.createGraphics()
-        g2.drawImage(roundImage, 0, 0, targetWidth, targetHeight, null)
-        g2.dispose()
-        return resizedImage
-    }
-
-    //合成图片 手手和头像
-    fun compoundImage(handImage: BufferedImage, avatarImage: BufferedImage, x: Int, y: Int, hy: Int): BufferedImage {
-        val backImage = BufferedImage(112, 112, TYPE_INT_RGB)
-        val g2 = backImage.createGraphics()
-        g2.color = Color.WHITE
-        g2.fillRect(0, 0, 112, 112)
-        g2.drawImage(avatarImage, x, y,  null) //绘制头像
-        g2.drawImage(handImage, 0, hy, null) //绘制手
-        g2.dispose()
-        return backImage
-    }
-
-    fun selfRead(i: Int): InputStream? {
-        val path = PatPat.javaClass.protectionDomain.codeSource.location.path
-        val jar = JarFile(path)
-        val entry = jar.getJarEntry("data/PatPat/img${i}.png")
-        return jar.getInputStream(entry)
-    }
+private fun selfRead(i: Int): InputStream? {
+    val path = PatPat.javaClass.protectionDomain.codeSource.location.path
+    val jarpath = JarFile(path)
+    val entry = jarpath.getJarEntry("data/PatPat/img${i}.png")
+    return jarpath.getInputStream(entry)
+}
