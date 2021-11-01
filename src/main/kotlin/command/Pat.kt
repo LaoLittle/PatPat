@@ -20,7 +20,7 @@ object Pat : SimpleCommand(
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(target: User){
         val qqid = target.id
-        getavatar(qqid)
+        getavatar(qqid, 80)
         getGroupOrNull()?.sendImage(File("$dataFolder/tmp").resolve("${qqid}_pat.gif"))
     }
 }
