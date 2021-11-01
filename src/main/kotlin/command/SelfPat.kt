@@ -19,7 +19,7 @@ object SelfPat : SimpleCommand(
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(){
         val qqid = user!!.id
-        getavatar(qqid)
+        getavatar(qqid, 80)
         getGroupOrNull()?.sendImage(File("$dataFolder/tmp").resolve("${qqid}_pat.gif"))
     }
 }
