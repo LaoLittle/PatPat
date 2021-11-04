@@ -74,8 +74,8 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
             //图像类型
             val imageType = images[0]!!.type
             //缩放参数
-            val sx = if (width == null) 1.0 else width as Double / images[0]!!.width
-            val sy = if (height == null) 1.0 else height as Double / images[0]!!.height
+            val sx = if (width == null) 1.0 else width.toDouble() / images[0]!!.width
+            val sy = if (height == null) 1.0 else height.toDouble() / images[0]!!.height
             val op = AffineTransformOp(AffineTransform.getScaleInstance(sx, sy), null)
             try {
                 val gif = GifEncoder(outputStream, imageType, delay, loop)
@@ -90,8 +90,8 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
         }
 
         private fun convert(
-            imagePaths: Array<String?>,
-            gifPath: String?,
+            imagePaths: Array<String>,
+            gifPath: String,
             delay: Int,
             loop: Boolean,
             width: Int?,
@@ -111,7 +111,7 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
 
         private fun convert(
             images: Array<BufferedImage?>,
-            gifPath: String?,
+            gifPath: String,
             delay: Int,
             loop: Boolean,
             width: Int?,
@@ -125,10 +125,10 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
             }
         }
 
-        fun convert(imagePaths: Array<String?>, gifPath: String?, delay: Int, loop: Boolean) {
+        fun convert(imagePaths: Array<String>, gifPath: String, delay: Int, loop: Boolean) {
             convert(imagePaths, gifPath, delay, loop, null, null)
         }
-        fun convert(images: Array<BufferedImage?>, gifPath: String?, delay: Int, loop: Boolean){
+        fun convert(images: Array<BufferedImage?>, gifPath: String, delay: Int, loop: Boolean){
             convert(images, gifPath, delay, loop, null, null)
         }
     }
