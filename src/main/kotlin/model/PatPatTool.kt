@@ -11,7 +11,9 @@ import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.awt.image.BufferedImage.TYPE_INT_ARGB
 import java.awt.image.BufferedImage.TYPE_INT_RGB
-import java.io.*
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.jar.JarFile
@@ -25,29 +27,24 @@ fun getavatar(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     var connection : HttpURLConnection? = null
     try {
         connection = URL(avatarurl).openConnection() as HttpURLConnection //建立链接
-
         connection.connect() //打开输入流
-
-        connection.inputStream.use { input ->
-            BufferedOutputStream(FileOutputStream(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg"))).use { output ->
-                input.copyTo(output)  //将文件复制到本地
-            }
-        }
     }catch (e : Exception){
         e.printStackTrace()
     }finally {
         connection?.disconnect()
     }
-    mkimg(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg"), tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
+    val avatar = connection?.inputStream
+    mkimg(avatar, tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
+    // hippopotomonstrosesquippedaliophobia : 长单词恐惧症
     tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg").delete()
     return
 }
 
 @Throws(IOException::class)
-private fun mkimg(filePath: File?, savePath: File?, delay: Int){
+private fun mkimg(avatar: InputStream?, savePath: File?, delay: Int){
     val targetSize = 112
     val cornerRadius = 112
-    val avatarImage = ImageIO.read(filePath)
+    val avatarImage = ImageIO.read(avatar)
     val roundImage = BufferedImage(targetSize, cornerRadius, TYPE_INT_ARGB)
     val g2 = roundImage.createGraphics()
     g2.composite = AlphaComposite.Src
@@ -71,6 +68,7 @@ private fun mkimg(filePath: File?, savePath: File?, delay: Int){
     GifEncoder.convert(images, "$savePath", delay, true)
 }
 
+//w: 宽 h: 高 x,y: 头像位置 hy:手的y轴偏移
 private fun processImage(
     image: BufferedImage,
     i: Int,
