@@ -10,3 +10,5 @@ chat-command：https://github.com/project-mirai/chat-command/releases/tag/0.5.1
 若要使用插件 请在聊天环境下输入 摸 + @目标
 
 清理缓存请输入/cc 或 /clearcache
+
+![加载失败](https://gitee.com/laolittle/pat-pat/blob/master/usage.gif)
