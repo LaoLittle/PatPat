@@ -2,7 +2,9 @@ package org.laolittle.plugin.command
 
 import net.mamoe.mirai.console.command.CommandSenderOnMessage
 import net.mamoe.mirai.console.command.SimpleCommand
+import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.command.getGroupOrNull
+import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.contact.User
 import org.laolittle.plugin.PatPat
@@ -10,6 +12,8 @@ import org.laolittle.plugin.PatPat.dataFolder
 import org.laolittle.plugin.model.getavatar
 import java.io.File
 
+@ConsoleExperimentalApi
+@ExperimentalCommandDescriptors
 object Pat : SimpleCommand(
     PatPat, "摸", "摸摸", "摸头", "patpat", "pat",
     description = "摸摸头"

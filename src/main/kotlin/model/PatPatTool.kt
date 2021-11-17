@@ -1,5 +1,7 @@
 package org.laolittle.plugin.model
 
+import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
+import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import org.laolittle.plugin.PatPat
 import org.laolittle.plugin.PatPat.dataFolder
 import org.laolittle.plugin.util.GifEncoder
@@ -19,11 +21,13 @@ import java.net.URL
 import java.util.jar.JarFile
 import javax.imageio.ImageIO
 
+@ExperimentalCommandDescriptors
+@ConsoleExperimentalApi
 fun getavatar(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     val tmp = File("$dataFolder/tmp")
     if(!tmp.exists()) tmp.mkdir()
     if(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif").exists()) return
-    val avatarurl = "http://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
+    val avatarurl = "https://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
     var connection : HttpURLConnection? = null
     try {
         connection = URL(avatarurl).openConnection() as HttpURLConnection //建立链接
@@ -36,10 +40,11 @@ fun getavatar(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     val avatar = connection?.inputStream
     mkimg(avatar, tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
     // hippopotomonstrosesquippedaliophobia : 长单词恐惧症
-    tmp.resolve("${hippopotomonstrosesquippedaliophobia}_avatar.jpg").delete()
     return
 }
 
+@ExperimentalCommandDescriptors
+@ConsoleExperimentalApi
 @Throws(IOException::class)
 private fun mkimg(avatar: InputStream?, savePath: File?, delay: Int){
     val targetSize = 112
@@ -69,6 +74,8 @@ private fun mkimg(avatar: InputStream?, savePath: File?, delay: Int){
 }
 
 //w: 宽 h: 高 x,y: 头像位置 hy:手的y轴偏移
+@ExperimentalCommandDescriptors
+@ConsoleExperimentalApi
 private fun processImage(
     image: BufferedImage,
     i: Int,
@@ -91,9 +98,10 @@ private fun processImage(
     g2.drawImage(handImage, 0, hy, null)
     g2.dispose()
     return processedImage
-    //return compoundImage(handImage, processingImage, y)
 }
 
+@ConsoleExperimentalApi
+@ExperimentalCommandDescriptors
 private fun selfRead(i: Int): InputStream? {
     val path = PatPat.javaClass.protectionDomain.codeSource.location.path
     val jarpath = JarFile(path)
