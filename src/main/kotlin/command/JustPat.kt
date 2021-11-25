@@ -8,7 +8,7 @@ import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.contact.User
 import org.laolittle.plugin.PatPat
-import org.laolittle.plugin.model.getavatar
+import org.laolittle.plugin.model.getPat
 import java.io.File
 
 @ConsoleExperimentalApi
@@ -25,7 +25,7 @@ object JustPat : SimpleCommand(
         val qqid = target.id
         val image = File("${PatPat.dataFolder}/tmp").resolve("${qqid}_pat.gif")
         if(image.exists()) image.delete()
-        getavatar(qqid, 20)
+        getPat(qqid, 20)
         getGroupOrNull()?.sendImage(image)
         image.delete()
     }
