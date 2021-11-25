@@ -23,22 +23,21 @@ import javax.imageio.ImageIO
 
 @ExperimentalCommandDescriptors
 @ConsoleExperimentalApi
-fun getavatar(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
+fun getPat(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     val tmp = File("$dataFolder/tmp")
     if(!tmp.exists()) tmp.mkdir()
     if(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif").exists()) return
-    val avatarurl = "https://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
-    var connection : HttpURLConnection? = null
+    val avatarUrl = "https://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
+    val connection : HttpURLConnection = URL(avatarUrl).openConnection() as HttpURLConnection
     try {
-        connection = URL(avatarurl).openConnection() as HttpURLConnection //建立链接
-        connection.connect() //打开输入流
+        connection.connect() //建立连接，打开输入流
     }catch (e : Exception){
         e.printStackTrace()
     }finally {
-        connection?.disconnect()
+        connection.disconnect()
     }
-    val avatar = connection?.inputStream
-    mkimg(avatar, tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
+    val avatar = connection.inputStream
+    mkImg(avatar, tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
     // hippopotomonstrosesquippedaliophobia : 长单词恐惧症
     return
 }
@@ -46,7 +45,7 @@ fun getavatar(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
 @ExperimentalCommandDescriptors
 @ConsoleExperimentalApi
 @Throws(IOException::class)
-private fun mkimg(avatar: InputStream?, savePath: File?, delay: Int){
+private fun mkImg(avatar: InputStream, savePath: File, delay: Int){
     val targetSize = 112
     val cornerRadius = 112
     val avatarImage = ImageIO.read(avatar)
@@ -69,7 +68,7 @@ private fun mkimg(avatar: InputStream?, savePath: File?, delay: Int){
     val p3 = processImage(roundImage, 2, 110, 76, 12, 40, 6)
     val p4 = processImage(roundImage, 3, 107, 84, 12, 32, 0)
     val p5 = processImage(roundImage, 4, 100, 100, 12, 16, 0)
-    val images: Array<BufferedImage?> = arrayOf(p1, p2, p3, p4, p5)
+    val images: Array<BufferedImage> = arrayOf(p1, p2, p3, p4, p5)
     GifEncoder.convert(images, "$savePath", delay, true)
 }
 
@@ -104,7 +103,7 @@ private fun processImage(
 @ExperimentalCommandDescriptors
 private fun selfRead(i: Int): InputStream? {
     val path = PatPat.javaClass.protectionDomain.codeSource.location.path
-    val jarpath = JarFile(path)
-    val entry = jarpath.getJarEntry("data/PatPat/img${i}.png")
-    return jarpath.getInputStream(entry)
+    val jarPath = JarFile(path)
+    val entry = jarPath.getJarEntry("data/PatPat/img${i}.png")
+    return jarPath.getInputStream(entry)
 }

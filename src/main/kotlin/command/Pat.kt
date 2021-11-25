@@ -9,7 +9,7 @@ import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.contact.User
 import org.laolittle.plugin.PatPat
 import org.laolittle.plugin.PatPat.dataFolder
-import org.laolittle.plugin.model.getavatar
+import org.laolittle.plugin.model.getPat
 import java.io.File
 
 @ConsoleExperimentalApi
@@ -24,7 +24,7 @@ object Pat : SimpleCommand(
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(target: User){
         val qqid = target.id
-        getavatar(qqid, 80)
+        getPat(qqid, 80)
         getGroupOrNull()?.sendImage(File("$dataFolder/tmp").resolve("${qqid}_pat.gif"))
     }
 }
