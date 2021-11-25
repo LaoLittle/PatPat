@@ -19,11 +19,16 @@ object PatPat : KotlinPlugin(
     JvmPluginDescription(
         id = "org.laolittle.plugin.PatPat",
         name = "PatPat",
-        version = "1.0.5",
+        version = "1.0.6",
     )
 ) {
     override fun onEnable() {
         logger.info { "摸头插件已加载" }
+        val osName = System.getProperties().getProperty("os.name")
+        if(osName.indexOf("Windows") < 0){
+            logger.info { "检测到当前为${osName}系统，将使用headless模式" }
+            System.setProperty("java.awt.headless", "true")
+        }
         Pat.register()
         SelfPat.register()
         ClearCache.register()
