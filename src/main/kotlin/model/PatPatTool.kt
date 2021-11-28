@@ -16,10 +16,10 @@ import java.awt.image.BufferedImage.TYPE_INT_RGB
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.net.HttpURLConnection
 import java.net.URL
 import java.util.jar.JarFile
 import javax.imageio.ImageIO
+import javax.net.ssl.HttpsURLConnection
 
 @ExperimentalCommandDescriptors
 @ConsoleExperimentalApi
@@ -28,7 +28,8 @@ fun getPat(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     if(!tmp.exists()) tmp.mkdir()
     if(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif").exists()) return
     val avatarUrl = "https://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
-    val connection : HttpURLConnection = URL(avatarUrl).openConnection() as HttpURLConnection
+    val connection = URL(avatarUrl).openConnection() as HttpsURLConnection
+    connection.connectTimeout = 5000
     try {
         connection.connect() //建立连接，打开输入流
     }catch (e : Exception){
@@ -39,7 +40,6 @@ fun getPat(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
     val avatar = connection.inputStream
     mkImg(avatar, tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
     // hippopotomonstrosesquippedaliophobia : 长单词恐惧症
-    return
 }
 
 @ExperimentalCommandDescriptors
@@ -101,7 +101,7 @@ private fun processImage(
 
 @ConsoleExperimentalApi
 @ExperimentalCommandDescriptors
-private fun selfRead(i: Int): InputStream? {
+private fun selfRead(i: Int): InputStream {
     val path = PatPat.javaClass.protectionDomain.codeSource.location.path
     val jarPath = JarFile(path)
     val entry = jarPath.getJarEntry("data/PatPat/img${i}.png")
