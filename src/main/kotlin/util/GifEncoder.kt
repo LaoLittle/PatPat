@@ -127,6 +127,19 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
 
  */
 
+        /**
+         * convert Jpeg to Gif
+         * PNG is Not supported (For now)
+         *
+         * 将Jpeg转换为Gif图片
+         * 暂不支持PNG图片 (目前)
+         * @param images: 传入的图片，有顺序
+         * @param gifPath: 输出路径
+         * @param delay: 每张图片的切换间隔
+         * @param loop: 是否循环播放
+         *
+         * */
+
         fun convert(images: Array<BufferedImage>, gifPath: String, delay: Int, loop: Boolean){
             convert(images, gifPath, delay, loop, null, null)
         }
