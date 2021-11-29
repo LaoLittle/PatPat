@@ -22,10 +22,9 @@ object JustPat : SimpleCommand(
 
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(target: User){
-        val qqid = target.id
-        val image = File("${PatPat.dataFolder}/tmp").resolve("${qqid}_pat.gif")
+        val image = File("${PatPat.dataFolder}/tmp").resolve("${target.id}_pat.gif")
         if(image.exists()) image.delete()
-        getPat(qqid, 20)
+        getPat(target, 20)
         getGroupOrNull()?.sendImage(image)
         image.delete()
     }

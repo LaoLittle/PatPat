@@ -23,8 +23,7 @@ object Pat : SimpleCommand(
 
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(target: User){
-        val qqid = target.id
-        getPat(qqid, 80)
-        getGroupOrNull()?.sendImage(File("$dataFolder/tmp").resolve("${qqid}_pat.gif"))
+        getPat(target, 80)
+        getGroupOrNull()?.sendImage(File("$dataFolder/tmp").resolve("${target.id}_pat.gif"))
     }
 }

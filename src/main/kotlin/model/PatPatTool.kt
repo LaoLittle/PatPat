@@ -2,6 +2,7 @@ package org.laolittle.plugin.model
 
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
+import net.mamoe.mirai.contact.Contact
 import org.laolittle.plugin.PatPat
 import org.laolittle.plugin.PatPat.dataFolder
 import org.laolittle.plugin.util.GifEncoder
@@ -18,27 +19,17 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import javax.imageio.ImageIO
-import javax.net.ssl.HttpsURLConnection
 
 @ExperimentalCommandDescriptors
 @ConsoleExperimentalApi
-fun getPat(hippopotomonstrosesquippedaliophobia: Long, delay: Int){
+fun getPat(hippopotomonstrosesquippedaliophobia: Contact, delay: Int){
+    val qqId = hippopotomonstrosesquippedaliophobia.id
+    // hippopotomonstrosesquippedaliophobia: 长单词恐惧症
     val tmp = File("$dataFolder/tmp")
     if(!tmp.exists()) tmp.mkdir()
-    if(tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif").exists()) return
-    val avatarUrl = "https://q1.qlogo.cn/g?b=qq&nk=$hippopotomonstrosesquippedaliophobia&s=640"
-    val connection = URL(avatarUrl).openConnection() as HttpsURLConnection
-    connection.connectTimeout = 5000
-    try {
-        connection.connect() //建立连接，打开输入流
-    }catch (e : Exception){
-        e.printStackTrace()
-    }finally {
-        connection.disconnect()
-    }
-    val avatar = connection.inputStream
-    mkImg(avatar, tmp.resolve("${hippopotomonstrosesquippedaliophobia}_pat.gif"), delay)
-    // hippopotomonstrosesquippedaliophobia : 长单词恐惧症
+    if(tmp.resolve("${qqId}_pat.gif").exists()) return
+    val avatar = URL(hippopotomonstrosesquippedaliophobia.avatarUrl).openStream()
+    mkImg(avatar, tmp.resolve("${qqId}_pat.gif"), delay)
 }
 
 @ExperimentalCommandDescriptors

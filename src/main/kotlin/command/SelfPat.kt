@@ -3,7 +3,6 @@ package org.laolittle.plugin.command
 import net.mamoe.mirai.console.command.CommandSenderOnMessage
 import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
-import net.mamoe.mirai.console.command.getGroupOrNull
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import org.laolittle.plugin.PatPat
@@ -22,8 +21,7 @@ object SelfPat : SimpleCommand(
 
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(){
-        val qqid = user!!.id
-        getPat(qqid, 80)
-        getGroupOrNull()?.sendImage(File("$dataFolder/tmp").resolve("${qqid}_pat.gif"))
+        getPat(user!!, 80)
+        subject?.sendImage(File("$dataFolder/tmp").resolve("${user!!.id}_pat.gif"))
     }
 }
