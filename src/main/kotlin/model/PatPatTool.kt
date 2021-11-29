@@ -17,7 +17,6 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
-import java.util.jar.JarFile
 import javax.imageio.ImageIO
 import javax.net.ssl.HttpsURLConnection
 
@@ -84,7 +83,7 @@ private fun processImage(
     y: Int,
     hy: Int
 ): BufferedImage {
-    val handImage = ImageIO.read(selfRead(i))
+    val handImage = ImageIO.read(PatPat.javaClass.getResourceAsStream("/data/PatPat/img${i}.png"))
     val processingImage = BufferedImage(w, h, TYPE_INT_ARGB)
     val processedImage = BufferedImage(112, 112, TYPE_INT_RGB)
     val g1 = processingImage.createGraphics()
@@ -99,6 +98,7 @@ private fun processImage(
     return processedImage
 }
 
+/*
 @ConsoleExperimentalApi
 @ExperimentalCommandDescriptors
 private fun selfRead(i: Int): InputStream {
@@ -107,3 +107,4 @@ private fun selfRead(i: Int): InputStream {
     val entry = jarPath.getJarEntry("data/PatPat/img${i}.png")
     return jarPath.getInputStream(entry)
 }
+ */
