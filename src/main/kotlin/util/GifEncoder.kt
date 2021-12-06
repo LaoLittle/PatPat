@@ -132,7 +132,7 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
          * PNG is Not supported (For now)
          *
          * 将Jpeg转换为Gif图片
-         * 暂不支持PNG图片 (目前)
+         * 暂不支持PNG图片
          * @param images: 传入的图片，有顺序
          * @param gifPath: 输出路径
          * @param delay: 每张图片的切换间隔
