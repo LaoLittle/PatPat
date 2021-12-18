@@ -13,8 +13,7 @@ import org.laolittle.plugin.command.Pat
 import org.laolittle.plugin.command.SelfPat
 import java.io.File
 
-@ExperimentalCommandDescriptors
-@ConsoleExperimentalApi
+@OptIn(ConsoleExperimentalApi::class, ExperimentalCommandDescriptors::class)
 object PatPat : KotlinPlugin(
     JvmPluginDescription(
         id = "org.laolittle.plugin.PatPat",
@@ -25,7 +24,7 @@ object PatPat : KotlinPlugin(
     override fun onEnable() {
         logger.info { "摸头插件已加载" }
         val osName = System.getProperties().getProperty("os.name")
-        if(osName.indexOf("Windows") < 0){
+        if(!osName.startsWith("Windows")){
             logger.info { "检测到当前为${osName}系统，将使用headless模式" }
             System.setProperty("java.awt.headless", "true")
         }

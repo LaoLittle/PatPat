@@ -7,7 +7,7 @@ import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import org.laolittle.plugin.PatPat
 import org.laolittle.plugin.PatPat.dataFolder
-import org.laolittle.plugin.model.getPat
+import org.laolittle.plugin.model.PatPatTool.getPat
 import java.io.File
 
 @ConsoleExperimentalApi
@@ -21,7 +21,7 @@ object SelfPat : SimpleCommand(
 
     @Handler
     suspend fun CommandSenderOnMessage<*>.handle(){
-        getPat(user!!, 80)
-        subject?.sendImage(File("$dataFolder/tmp").resolve("${user!!.id}_pat.gif"))
+        getPat(fromEvent.sender, 80)
+        fromEvent.subject.sendImage(File("$dataFolder/tmp").resolve("${fromEvent.sender.id}_pat.gif"))
     }
 }
