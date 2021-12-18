@@ -1,5 +1,5 @@
 plugins {
-    val kotlinVersion = "1.6.0"
+    val kotlinVersion = "1.6.10"
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.serialization") version kotlinVersion
 
@@ -13,4 +13,10 @@ repositories {
     maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
     mavenLocal()
+}
+
+tasks {
+    compileKotlin {
+        kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
 }
