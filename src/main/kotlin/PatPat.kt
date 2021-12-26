@@ -32,11 +32,13 @@ object PatPat : KotlinPlugin(
         init()
         logger.info { "摸头插件已加载" }
         GlobalEventChannel.subscribeAlways<MessageEvent> {
+            if (!message.content.startsWith("摸")) return@subscribeAlways
             val matchResult = Regex("摸(.*)").find(message.content) ?: return@subscribeAlways
+            val matchConvert = message.content.replace(Regex("摸[爆摸头]"), "摸")
             val targetId =
-                if (matchResult.groupValues[1][0] == '我') null else (Regex("[${matchResult.groupValues[1][0]}|@](.*)").find(
-                    message.content
-                ) ?: Regex("""\d""").find(message.content))?.groupValues?.get(0) ?: subject.sendMessage("我不知道你要摸谁")
+                if (matchResult.groupValues[1][0] == '我') null else (Regex("摸(.*)").find(
+                    matchConvert
+                ))?.groupValues?.get(1) ?: subject.sendMessage("我不知道你要摸谁")
                     .run { return@subscribeAlways }
             val target =
                 if (targetId == null) sender else subject.getUserOrNull(targetId) ?: subject.sendMessage("我不知道你要摸谁")

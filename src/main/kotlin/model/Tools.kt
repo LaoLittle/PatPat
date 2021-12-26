@@ -1,8 +1,6 @@
 package org.laolittle.plugin.model
 
 import net.mamoe.mirai.console.internal.fuzzySearchMember
-import net.mamoe.mirai.console.internal.toDecimalPlace
-import net.mamoe.mirai.console.internal.truncate
 import net.mamoe.mirai.contact.*
 
 object Tools {
@@ -13,7 +11,7 @@ object Tools {
      * @param msg 传入的消息[String]
      * @return User if only one is found null otherwise
      * */
-    suspend fun Contact.getUserOrNull(msg: String): User? {
+    fun Contact.getUserOrNull(msg: String): User? {
         val noneAt = msg.replace("@", "").replace(" ", "")
         if (noneAt.isBlank()) {
             return null
@@ -38,7 +36,7 @@ object Tools {
      * @return Member if only one exist or null otherwise
      * @author mamoe
      * */
-    private suspend fun Group.findMemberOrNull(nameCard: String): Member? {
+    private fun Group.findMemberOrNull(nameCard: String): Member? {
         this.members.singleOrNull { it.nameCardOrNick.contains(nameCard) }?.let { return it }
         this.members.singleOrNull { it.nameCardOrNick.contains(nameCard, ignoreCase = true) }?.let { return it }
 
@@ -46,16 +44,14 @@ object Tools {
         candidates.singleOrNull()?.let {
             if (it.second == 1.0) return it.first // single match
         }
+        var maxPerMember: Member? = null
         if (candidates.isNotEmpty()) {
-            var index = 1
-            sendMessage(
-                "无法找到成员 $nameCard。 多个成员满足搜索结果或匹配度不足: \n\n" +
-                        candidates.joinToString("\n", limit = 6) {
-                            val percentage = (it.second * 100).toDecimalPlace(0)
-                            "#${index++}(${percentage}%)${it.first.nameCardOrNick.truncate(10)}(${it.first.id})" // #1 15.4%
-                        }
-            )
+            var maxPer = 0.0
+            candidates.forEach {
+                if (it.second > maxPer) maxPerMember = it.first
+                maxPer = it.second
+            }
         }
-        return null
+        return maxPerMember
     }
 }

@@ -11,6 +11,7 @@ package net.mamoe.mirai.console.internal
 
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
+import net.mamoe.mirai.contact.nameCardOrNick
 import kotlin.math.max
 import kotlin.math.min
 
@@ -48,7 +49,7 @@ internal fun Group.fuzzySearchMember(
 ): List<Pair<Member, Double>> {
     val candidates = (this.members + botAsMember)
         .asSequence()
-        .associateWith { it.nameCard.fuzzyMatchWith(nameCardTarget) }
+        .associateWith { it.nameCardOrNick.fuzzyMatchWith(nameCardTarget) }
         .filter { it.value >= minRate }
         .toList()
         .sortedByDescending { it.second }
@@ -68,28 +69,4 @@ internal fun Group.fuzzySearchMember(
         }
     }
 }
-
-internal fun Double.toDecimalPlace(n: Int): String = "%.${n}f".format(this)
-
-internal fun String.truncate(lengthLimit: Int, replacement: String = "..."): String = buildString {
-    var lengthSum = 0
-    for (char in this@truncate) {
-        lengthSum += char.chineseLength()
-        if (lengthSum > lengthLimit) {
-            append(replacement)
-            return toString()
-        } else append(char)
-    }
-    return toString()
-}
-
-internal fun Char.chineseLength(): Int {
-    return when (this) {
-        in '\u0000'..'\u007F' -> 1
-        in '\u0080'..'\u07FF' -> 2
-        in '\u0800'..'\uFFFF' -> 2
-        else -> 2
-    }
-}
-
 //// internal
