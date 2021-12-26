@@ -89,27 +89,28 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
                 throw RuntimeException("GIF编码出错", e)
             }
         }
-/*
-        private fun convert(
-            imagePaths: Array<String>,
-            gifPath: String,
-            delay: Int,
-            loop: Boolean,
-            width: Int?,
-            height: Int?
-        ) {
-            try {
-                val images = arrayOfNulls<BufferedImage>(imagePaths.size)
-                for (i in imagePaths.indices) {
-                    images[i] = ImageIO.read(File(imagePaths[i]))
+
+        /*
+                private fun convert(
+                    imagePaths: Array<String>,
+                    gifPath: String,
+                    delay: Int,
+                    loop: Boolean,
+                    width: Int?,
+                    height: Int?
+                ) {
+                    try {
+                        val images = arrayOfNulls<BufferedImage>(imagePaths.size)
+                        for (i in imagePaths.indices) {
+                            images[i] = ImageIO.read(File(imagePaths[i]))
+                        }
+                        val fileImageOutputStream = FileImageOutputStream(File(gifPath))
+                        convert(images, fileImageOutputStream, delay, loop, width, height)
+                    } catch (e: Exception) {
+                        throw RuntimeException("GIF convert error", e)
+                    }
                 }
-                val fileImageOutputStream = FileImageOutputStream(File(gifPath))
-                convert(images, fileImageOutputStream, delay, loop, width, height)
-            } catch (e: Exception) {
-                throw RuntimeException("GIF convert error", e)
-            }
-        }
-*/
+        */
         private fun convert(
             images: Array<BufferedImage>,
             gifPath: String,
@@ -118,8 +119,8 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
             width: Int?,
             height: Int?
         ) {
-                val fileImageOutputStream = FileImageOutputStream(File(gifPath))
-                convert(images, fileImageOutputStream, delay, loop, width, height)
+            val fileImageOutputStream = FileImageOutputStream(File(gifPath))
+            convert(images, fileImageOutputStream, delay, loop, width, height)
         }
 /*
         fun convert(imagePaths: Array<String>, gifPath: String, delay: Int, loop: Boolean) {
@@ -141,7 +142,7 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
          *
          * */
 
-        fun convert(images: Array<BufferedImage>, gifPath: String, delay: Int, loop: Boolean){
+        fun convert(images: Array<BufferedImage>, gifPath: String, delay: Int, loop: Boolean) {
             convert(images, gifPath, delay, loop, null, null)
         }
     }

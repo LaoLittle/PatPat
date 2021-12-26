@@ -14,13 +14,13 @@ import java.io.File
 object ClearCache : SimpleCommand(
     PatPat, "clearcache", "cc",
     description = "清理缓存"
-){
+) {
     @Handler
-    suspend fun CommandSender.handle(){
+    suspend fun CommandSender.handle() {
         val tmp = File("$dataFolder/tmp")
         var flag = false
-        if(tmp.exists()) flag = tmp.deleteRecursively()
-        if(flag) sendMessage(PlainText("缓存清理完毕"))
+        if (tmp.exists()) flag = tmp.deleteRecursively()
+        if (flag) sendMessage(PlainText("缓存清理完毕"))
         else sendMessage(PlainText("缓存清理失败！"))
     }
 }

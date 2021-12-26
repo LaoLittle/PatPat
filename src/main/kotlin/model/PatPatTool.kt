@@ -2,7 +2,7 @@ package org.laolittle.plugin.model
 
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
-import net.mamoe.mirai.contact.Contact
+import net.mamoe.mirai.contact.User
 import org.laolittle.plugin.PatPat
 import org.laolittle.plugin.util.GifEncoder
 import java.awt.AlphaComposite
@@ -18,17 +18,17 @@ import javax.imageio.ImageIO
 object PatPatTool {
 
     @OptIn(ExperimentalCommandDescriptors::class, ConsoleExperimentalApi::class)
-    fun getPat(hippopotomonstrosesquippedaliophobia: Contact, delay: Int){
+    fun getPat(hippopotomonstrosesquippedaliophobia: User, delay: Int) {
         val qqId = hippopotomonstrosesquippedaliophobia.id
         // hippopotomonstrosesquippedaliophobia: 长单词恐惧症
         val tmp = File("${PatPat.dataFolder}/tmp")
-        if(!tmp.exists()) tmp.mkdir()
-        if(tmp.resolve("${qqId}_pat.gif").exists()) return
+        if (!tmp.exists()) tmp.mkdir()
+        if (tmp.resolve("${qqId}_pat.gif").exists()) return
         val avatar = URL(hippopotomonstrosesquippedaliophobia.avatarUrl)
         mkImg(avatar, tmp.resolve("${qqId}_pat.gif"), delay)
     }
 
-    private fun mkImg(avatar: URL, savePath: File, delay: Int){
+    private fun mkImg(avatar: URL, savePath: File, delay: Int) {
         val targetSize = 112
         val cornerRadius = 112
         val avatarImage = ImageIO.read(avatar)
