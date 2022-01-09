@@ -13,7 +13,10 @@ import net.mamoe.mirai.utils.info
 import org.laolittle.plugin.command.ClearCache
 import org.laolittle.plugin.model.PatPatTool
 import org.laolittle.plugin.model.Tools.getUserOrNull
+import org.laolittle.plugin.util.AutoClear
+import org.laolittle.plugin.util.inActive
 import java.io.File
+import java.util.*
 
 @OptIn(ConsoleExperimentalApi::class, ExperimentalCommandDescriptors::class)
 object PatPat : KotlinPlugin(
@@ -55,6 +58,10 @@ object PatPat : KotlinPlugin(
                     PatPatTool.getPat(target, 80)
                     subject.sendImage(File("$dataFolder/tmp").resolve("${target.id}_pat.gif"))
                 }
+            }
+            if (inActive.add(target)) {
+                val task = AutoClear(target)
+                Timer().schedule(task, Date(System.currentTimeMillis() + 2 * 60 * 1000))
             }
         }
     }

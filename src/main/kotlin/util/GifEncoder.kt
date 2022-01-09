@@ -4,6 +4,7 @@ import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.awt.image.RenderedImage
+import java.io.Closeable
 import java.io.File
 import java.io.IOException
 import javax.imageio.*
@@ -14,7 +15,8 @@ import javax.imageio.stream.FileImageOutputStream
 import javax.imageio.stream.ImageOutputStream
 
 @Suppress("KotlinConstantConditions", "SameParameterValue")
-class GifEncoder private constructor(outputStream: ImageOutputStream, imageType: Int, delay: Int, loop: Boolean) {
+class GifEncoder private constructor(outputStream: ImageOutputStream, imageType: Int, delay: Int, loop: Boolean) :
+    Closeable {
     private val writer: ImageWriter = ImageIO.getImageWritersBySuffix("gif").next()
     private val params: ImageWriteParam = writer.defaultWriteParam
     private val metadata: IIOMetadata
@@ -41,12 +43,12 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
     }
 
     @Throws(IOException::class)
-    fun writeToSequence(img: RenderedImage?) {
+    fun writeToSequence(img: RenderedImage) {
         writer.writeToSequence(IIOImage(img, null, metadata), params)
     }
 
     @Throws(IOException::class)
-    fun close() {
+    override fun close() {
         writer.endWriteSequence()
     }
 
@@ -78,16 +80,15 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
             val sx = if (width == null) 1.0 else width.toDouble() / images[0].width
             val sy = if (height == null) 1.0 else height.toDouble() / images[0].height
             val op = AffineTransformOp(AffineTransform.getScaleInstance(sx, sy), null)
-            try {
-                val gif = GifEncoder(outputStream, imageType, delay, loop)
-                for (image in images) {
-                    gif.writeToSequence(op.filter(image, null))
+            runCatching {
+                outputStream.use { output ->
+                    GifEncoder(output, imageType, delay, loop).use { gif ->
+                        for (image in images) {
+                            gif.writeToSequence(op.filter(image, null))
+                        }
+                    }
                 }
-                gif.close()
-                outputStream.close()
-            } catch (e: Exception) {
-                throw RuntimeException("GIF编码出错", e)
-            }
+            }.onFailure { e -> throw RuntimeException("GIF编码出错", e) }
         }
 
         /*
