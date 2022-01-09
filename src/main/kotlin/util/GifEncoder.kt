@@ -112,23 +112,6 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
                     }
                 }
         */
-        private fun convert(
-            images: Array<BufferedImage>,
-            gifPath: String,
-            delay: Int,
-            loop: Boolean,
-            width: Int?,
-            height: Int?
-        ) {
-            val fileImageOutputStream = FileImageOutputStream(File(gifPath))
-            convert(images, fileImageOutputStream, delay, loop, width, height)
-        }
-/*
-        fun convert(imagePaths: Array<String>, gifPath: String, delay: Int, loop: Boolean) {
-            convert(imagePaths, gifPath, delay, loop, null, null)
-        }
-
- */
 
         /**
          * convert Jpeg to Gif
@@ -142,10 +125,23 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
          * @param loop: 是否循环播放
          *
          * */
-
-        fun convert(images: Array<BufferedImage>, gifPath: String, delay: Int, loop: Boolean) {
-            convert(images, gifPath, delay, loop, null, null)
+        fun convert(
+            images: Array<BufferedImage>,
+            gifPath: String,
+            delay: Int,
+            loop: Boolean = true,
+            width: Int? = null,
+            height: Int? = null
+        ) {
+            val fileImageOutputStream = FileImageOutputStream(File(gifPath))
+            convert(images, fileImageOutputStream, delay, loop, width, height)
         }
+/*
+        fun convert(imagePaths: Array<String>, gifPath: String, delay: Int, loop: Boolean) {
+            convert(imagePaths, gifPath, delay, loop, null, null)
+        }
+
+ */
     }
 
     init {

@@ -52,7 +52,7 @@ object PatPatTool {
         val p4 = processImage(roundImage, 3, 107, 84, 12, 32, 0)
         val p5 = processImage(roundImage, 4, 100, 100, 12, 16, 0)
         val images: Array<BufferedImage> = arrayOf(p1, p2, p3, p4, p5)
-        GifEncoder.convert(images, "$savePath", delay, true)
+        GifEncoder.convert(images, "$savePath", delay)
     }
 
     //w: 宽 h: 高 x,y: 头像位置 hy:手的y轴偏移
