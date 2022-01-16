@@ -6,8 +6,8 @@ import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
-import net.mamoe.mirai.event.GlobalEventChannel
 import net.mamoe.mirai.event.events.MessageEvent
+import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.info
 import org.laolittle.plugin.command.ClearCache
@@ -34,34 +34,39 @@ object PatPat : KotlinPlugin(
         }
         init()
         logger.info { "摸头插件已加载" }
-        GlobalEventChannel.subscribeAlways<MessageEvent> {
-            if (!message.content.startsWith("摸")) return@subscribeAlways
-            val matchResult = Regex("摸(.*)").find(message.content) ?: return@subscribeAlways
-            val matchConvert = message.content.replace(Regex("摸[爆摸头]"), "摸")
-            val targetId =
-                if (matchResult.groupValues[1][0] == '我') null else (Regex("摸(.*)").find(
-                    matchConvert
-                ))?.groupValues?.get(1) ?: subject.sendMessage("我不知道你要摸谁")
-                    .run { return@subscribeAlways }
-            val target =
-                if (targetId == null) sender else subject.getUserOrNull(targetId) ?: subject.sendMessage("我不知道你要摸谁")
-                    .run { return@subscribeAlways }
-            when (matchResult.groupValues[1][0]) {
-                '爆' -> {
-                    val image = File("${PatPat.dataFolder}/tmp").resolve("${target.id}_pat.gif")
-                    if (image.exists()) image.delete()
-                    PatPatTool.getPat(target, 20)
-                    subject.sendImage(image)
-                    image.delete()
+        globalEventChannel().subscribeAlways<MessageEvent> {
+            if (message.content.startsWith("摸")) {
+                val matchResult = Regex("摸(.*)").find(message.content) ?: return@subscribeAlways
+                val matchConvert = message.content.replace(Regex("摸[爆摸头]"), "摸")
+                if (matchConvert.length == 1) {
+                    subject.sendMessage("发送${message.content}+@来摸头哦")
+                    return@subscribeAlways
                 }
-                else -> {
-                    PatPatTool.getPat(target, 80)
-                    subject.sendImage(File("$dataFolder/tmp").resolve("${target.id}_pat.gif"))
+                val targetId =
+                    if (matchConvert[1] == '我') null else (Regex("摸(.*)").find(
+                        matchConvert
+                    ))?.groupValues?.get(1) ?: subject.sendMessage("我不知道你要摸谁")
+                        .run { return@subscribeAlways }
+                val target =
+                    if (targetId == null) sender else subject.getUserOrNull(targetId) ?: subject.sendMessage("我不知道你要摸谁")
+                        .run { return@subscribeAlways }
+                when (matchResult.groupValues[1][0]) {
+                    '爆' -> {
+                        val image = File("${PatPat.dataFolder}/tmp").resolve("${target.id}_pat.gif")
+                        if (image.exists()) image.delete()
+                        PatPatTool.getPat(target, 20)
+                        subject.sendImage(image)
+                        image.delete()
+                    }
+                    else -> {
+                        PatPatTool.getPat(target, 80)
+                        subject.sendImage(File("$dataFolder/tmp").resolve("${target.id}_pat.gif"))
+                    }
                 }
-            }
-            if (inActive.add(target)) {
-                val task = AutoClear(target)
-                Timer().schedule(task, Date(System.currentTimeMillis() + 2 * 60 * 1000))
+                if (inActive.add(target)) {
+                    val task = AutoClear(target)
+                    Timer().schedule(task, Date(System.currentTimeMillis() + 2 * 60 * 1000))
+                }
             }
         }
     }
