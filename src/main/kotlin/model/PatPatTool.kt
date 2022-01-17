@@ -3,7 +3,10 @@ package org.laolittle.plugin.model
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.User
+import net.mamoe.mirai.message.data.Image
+import net.mamoe.mirai.message.data.Image.Key.queryUrl
 import org.laolittle.plugin.PatPat
+import org.laolittle.plugin.PatPat.tmp
 import org.laolittle.plugin.util.GifEncoder
 import java.awt.AlphaComposite
 import java.awt.Color
@@ -16,22 +19,27 @@ import javax.imageio.ImageIO
 
 @Suppress("SameParameterValue")
 object PatPatTool {
-
     @OptIn(ExperimentalCommandDescriptors::class, ConsoleExperimentalApi::class)
     fun getPat(hippopotomonstrosesquippedaliophobia: User, delay: Int) {
         val qqId = hippopotomonstrosesquippedaliophobia.id
         // hippopotomonstrosesquippedaliophobia: 长单词恐惧症
-        val tmp = File("${PatPat.dataFolder}/tmp")
+
         if (!tmp.exists()) tmp.mkdir()
         if (tmp.resolve("${qqId}_pat.gif").exists()) return
         val avatar = URL(hippopotomonstrosesquippedaliophobia.avatarUrl)
         mkImg(avatar, tmp.resolve("${qqId}_pat.gif"), delay)
     }
 
-    private fun mkImg(avatar: URL, savePath: File, delay: Int) {
+    @Suppress("unused")
+    suspend fun getImagePat(image: Image, delay: Int) {
+        val imageFromServer = URL(image.queryUrl())
+        mkImg(imageFromServer, tmp.resolve("${image.imageId}_pat.gif"), delay)
+    }
+
+    private fun mkImg(image: URL, savePath: File, delay: Int) {
         val targetSize = 112
         val cornerRadius = 112
-        val avatarImage = ImageIO.read(avatar)
+        val avatarImage = ImageIO.read(image)
         val roundImage = BufferedImage(targetSize, cornerRadius, BufferedImage.TYPE_INT_ARGB)
         val g2 = roundImage.createGraphics()
         g2.composite = AlphaComposite.Src

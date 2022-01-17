@@ -8,14 +8,15 @@ import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.event.globalEventChannel
+import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.content
+import net.mamoe.mirai.message.data.firstIsInstance
 import net.mamoe.mirai.utils.info
 import org.laolittle.plugin.command.ClearCache
 import org.laolittle.plugin.model.PatPatTool
 import org.laolittle.plugin.model.Tools.getUserOrNull
 import org.laolittle.plugin.util.AutoClear
 import org.laolittle.plugin.util.inActive
-import java.io.File
 import java.util.*
 
 @OptIn(ConsoleExperimentalApi::class, ExperimentalCommandDescriptors::class)
@@ -26,6 +27,8 @@ object PatPat : KotlinPlugin(
         version = "2.0",
     )
 ) {
+
+    val tmp = dataFolder.resolve("tmp")
     override fun onEnable() {
         val osName = System.getProperties().getProperty("os.name")
         if (!osName.startsWith("Windows")) {
@@ -36,6 +39,14 @@ object PatPat : KotlinPlugin(
         logger.info { "摸头插件已加载" }
         globalEventChannel().subscribeAlways<MessageEvent> {
             if (message.content.startsWith("摸")) {
+                if (message.contains(Image)) {
+                    runCatching {
+                        val image = message.firstIsInstance<Image>()
+                        PatPatTool.getImagePat(image, 40)
+                        subject.sendImage(tmp.resolve("${image.imageId}_pat.gif"))
+                    }.onFailure { e -> logger.error(e) }
+                    return@subscribeAlways
+                }
                 val matchResult = Regex("摸(.*)").find(message.content) ?: return@subscribeAlways
                 val matchConvert = message.content.replace(Regex("摸[爆摸头]"), "摸")
                 if (matchConvert.length == 1) {
@@ -52,7 +63,7 @@ object PatPat : KotlinPlugin(
                         .run { return@subscribeAlways }
                 when (matchResult.groupValues[1][0]) {
                     '爆' -> {
-                        val image = File("${PatPat.dataFolder}/tmp").resolve("${target.id}_pat.gif")
+                        val image = tmp.resolve("${target.id}_pat.gif")
                         if (image.exists()) image.delete()
                         PatPatTool.getPat(target, 20)
                         subject.sendImage(image)
@@ -60,7 +71,7 @@ object PatPat : KotlinPlugin(
                     }
                     else -> {
                         PatPatTool.getPat(target, 80)
-                        subject.sendImage(File("$dataFolder/tmp").resolve("${target.id}_pat.gif"))
+                        subject.sendImage(tmp.resolve("${target.id}_pat.gif"))
                     }
                 }
                 if (inActive.add(target)) {
@@ -77,8 +88,8 @@ object PatPat : KotlinPlugin(
 
     private fun init() {
         ClearCache.register()
-        val tmp = File("$dataFolder/tmp")
         if (tmp.exists()) tmp.deleteRecursively()
+        if (!tmp.exists()) tmp.mkdir()
         logger.info { "缓存已自动清理" }
     }
 }

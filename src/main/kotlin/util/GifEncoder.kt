@@ -1,5 +1,7 @@
 package org.laolittle.plugin.util
 
+import net.mamoe.mirai.utils.error
+import org.laolittle.plugin.PatPat
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
@@ -25,20 +27,21 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
     private fun configureRootMetadata(delay: Int, loop: Boolean) {
         val metaFormatName = metadata.nativeMetadataFormatName
         val root = metadata.getAsTree(metaFormatName) as IIOMetadataNode
-        val graphicsControlExtensionNode = getNode(root, "GraphicControlExtension")
-        graphicsControlExtensionNode.setAttribute("disposalMethod", "none")
-        graphicsControlExtensionNode.setAttribute("userInputFlag", "FALSE")
-        graphicsControlExtensionNode.setAttribute("transparentColorFlag", "FALSE")
-        graphicsControlExtensionNode.setAttribute("delayTime", (delay / 10).toString())
-        graphicsControlExtensionNode.setAttribute("transparentColorIndex", "0")
-        val appExtensionsNode = getNode(root, "ApplicationExtensions")
-        val child = IIOMetadataNode("ApplicationExtension")
-        child.setAttribute("applicationID", "NETSCAPE")
-        child.setAttribute("authenticationCode", "2.0")
-        val loopContinuously = if (loop) 0 else 1
-        child.userObject =
-            byteArrayOf(0x1, (loopContinuously and 0xFF).toByte(), (loopContinuously shr 8 and 0xFF).toByte())
-        appExtensionsNode.appendChild(child)
+        getNode(root, "GraphicControlExtension").apply {
+            setAttribute("disposalMethod", "none")
+            setAttribute("userInputFlag", "FALSE")
+            setAttribute("transparentColorFlag", "FALSE")
+            setAttribute("delayTime", (delay / 10).toString())
+            setAttribute("transparentColorIndex", "0")
+        }
+        IIOMetadataNode("ApplicationExtension").apply {
+            setAttribute("applicationID", "NETSCAPE")
+            setAttribute("authenticationCode", "2.0")
+            val loopContinuously = if (loop) 0 else 1
+            userObject =
+                byteArrayOf(0x1, (loopContinuously and 0xFF).toByte(), (loopContinuously shr 8 and 0xFF).toByte())
+            getNode(root, "ApplicationExtensions").appendChild(this)
+        }
         metadata.setFromTree(metaFormatName, root)
     }
 
@@ -53,7 +56,6 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
     }
 
     companion object {
-
         private fun getNode(rootNode: IIOMetadataNode, nodeName: String): IIOMetadataNode {
             val nNodes = rootNode.length
             for (i in 0 until nNodes) {
@@ -88,9 +90,8 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
                         }
                     }
                 }
-            }.onFailure { e -> throw RuntimeException("GIF编码出错", e) }
+            }.onFailure { e -> PatPat.logger.error { "GIF编码出错: $e" } }
         }
-
         /*
                 private fun convert(
                     imagePaths: Array<String>,
@@ -115,7 +116,7 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
 
         /**
          * convert Jpeg to Gif
-         * PNG is Not supported (For now)
+         * Currently, the PNG is not support
          *
          * 将Jpeg转换为Gif图片
          * 暂不支持PNG图片
