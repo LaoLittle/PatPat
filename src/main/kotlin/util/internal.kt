@@ -7,7 +7,7 @@
  * https://github.com/mamoe/mirai/blob/dev/LICENSE
  */
 
-package net.mamoe.mirai.console.internal
+package org.laolittle.plugin.util
 
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
