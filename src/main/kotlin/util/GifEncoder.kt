@@ -63,9 +63,10 @@ class GifEncoder private constructor(outputStream: ImageOutputStream, imageType:
                     return rootNode.item(i) as IIOMetadataNode
                 }
             }
-            val node = IIOMetadataNode(nodeName)
-            rootNode.appendChild(node)
-            return node
+            IIOMetadataNode(nodeName).apply {
+                rootNode.appendChild(this)
+                return this
+            }
         }
 
         private fun convert(

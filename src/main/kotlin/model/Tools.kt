@@ -1,7 +1,7 @@
 package org.laolittle.plugin.model
 
-import net.mamoe.mirai.console.internal.fuzzySearchMember
 import net.mamoe.mirai.contact.*
+import org.laolittle.plugin.util.fuzzySearchMember
 
 object Tools {
     /**
