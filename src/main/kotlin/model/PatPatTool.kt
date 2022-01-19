@@ -84,7 +84,6 @@ object PatPatTool {
             dispose()
         }
         processedImage.createGraphics().apply {
-            setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
             color = Color.WHITE
             fillRect(0, 0, 112, 112)
             drawImage(processingImage, x, y, null)
