@@ -3,9 +3,9 @@ package org.laolittle.plugin
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.permission.AbstractPermitteeId
+import net.mamoe.mirai.console.permission.Permission
 import net.mamoe.mirai.console.permission.PermissionService
 import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission
-import net.mamoe.mirai.console.permission.PermitteeId.Companion.permitteeId
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
@@ -35,14 +35,14 @@ object PatPat : KotlinPlugin(
 ) {
 
     val tmp = dataFolder.resolve("tmp")
-    private val patPermission by lazy { PermissionService.INSTANCE.register(permissionId("pat"), "允许使用摸头功能") }
+    private lateinit var patPermission: Permission
     override fun onEnable() {
         val osName = System.getProperties().getProperty("os.name")
         if (!osName.startsWith("Windows")) {
             logger.info { "检测到当前为${osName}系统，将使用headless模式" }
             System.setProperty("java.awt.headless", "true")
         }
-        patPermission
+        patPermission = PermissionService.INSTANCE.register(permissionId("pat"), "允许使用摸头功能")
         init()
         logger.info { "摸头插件已加载" }
         globalEventChannel().subscribeAlways<MessageEvent> {
