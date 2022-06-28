@@ -2,10 +2,16 @@ package org.laolittle.plugin
 
 import net.mamoe.mirai.console.command.CommandManager.INSTANCE.register
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
+import net.mamoe.mirai.console.permission.AbstractPermitteeId
+import net.mamoe.mirai.console.permission.Permission
+import net.mamoe.mirai.console.permission.PermissionService
+import net.mamoe.mirai.console.permission.PermissionService.Companion.hasPermission
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.console.util.ConsoleExperimentalApi
 import net.mamoe.mirai.contact.Contact.Companion.sendImage
+import net.mamoe.mirai.contact.Member
+import net.mamoe.mirai.contact.User
 import net.mamoe.mirai.event.events.MessageEvent
 import net.mamoe.mirai.event.globalEventChannel
 import net.mamoe.mirai.message.data.Image
@@ -29,16 +35,18 @@ object PatPat : KotlinPlugin(
 ) {
 
     val tmp = dataFolder.resolve("tmp")
+    private lateinit var patPermission: Permission
     override fun onEnable() {
         val osName = System.getProperties().getProperty("os.name")
         if (!osName.startsWith("Windows")) {
             logger.info { "检测到当前为${osName}系统，将使用headless模式" }
             System.setProperty("java.awt.headless", "true")
         }
+        patPermission = PermissionService.INSTANCE.register(permissionId("pat"), "允许使用摸头功能")
         init()
         logger.info { "摸头插件已加载" }
         globalEventChannel().subscribeAlways<MessageEvent> {
-            if (message.content.startsWith("摸")) {
+            if (message.content.startsWith("摸") && checkPatPermission(sender)) {
                 if (message.contains(Image)) {
                     runCatching {
                         val image = message.firstIsInstance<Image>()
@@ -91,5 +99,12 @@ object PatPat : KotlinPlugin(
         if (tmp.exists()) tmp.deleteRecursively()
         if (!tmp.exists()) tmp.mkdir()
         logger.info { "缓存已自动清理" }
+    }
+
+    private fun checkPatPermission(user: User): Boolean {
+        return when(user){
+            is Member -> AbstractPermitteeId.ExactMember(user.group.id, user.id)
+            else -> AbstractPermitteeId.ExactUser(user.id)
+        }.hasPermission(patPermission)
     }
 }
